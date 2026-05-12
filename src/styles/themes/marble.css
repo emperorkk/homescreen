@@ -1,0 +1,48 @@
+[data-theme="marble"] {
+  --bg: #08070a;
+  --bg-elev: #14101a;
+  --fg: #f3e6c4;
+  --fg-dim: #a9956a;
+  --accent: #d4af37;
+  --accent-strong: #f0c850;
+  --danger: #c44b3b;
+  --surface: rgba(212, 175, 55, 0.06);
+  --surface-strong: rgba(212, 175, 55, 0.14);
+  --border: rgba(212, 175, 55, 0.22);
+  --shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  --font-display: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+  --digit-gradient: linear-gradient(
+    180deg,
+    #f3e6c4 0%,
+    #d4af37 35%,
+    #8a6a1e 60%,
+    #f0c850 80%,
+    #d4af37 100%
+  );
+  --digit-shadow: 0 0 28px rgba(212, 175, 55, 0.4),
+    0 2px 0 rgba(0, 0, 0, 0.5);
+  --button-shadow: 0 6px 22px rgba(212, 175, 55, 0.18);
+}
+
+[data-theme="marble"] .clock {
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+[data-theme="marble"] .clock-ampm {
+  -webkit-text-fill-color: var(--fg-dim);
+  color: var(--fg-dim);
+}
+
+[data-theme="marble"] .btn.primary {
+  background: linear-gradient(180deg, #f0c850, #d4af37 60%, #a07a1a);
+  color: #1a1206;
+  border: 1px solid #8a6a1e;
+}
+
+[data-theme="marble"] .countdown-ring .ring-progress {
+  stroke: var(--accent);
+  filter: drop-shadow(0 0 12px var(--accent));
+}

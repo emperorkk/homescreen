@@ -1,0 +1,13 @@
+[data-theme="dark"] {
+  --bg: #0b0c10;
+  --bg-elev: #14161d;
+  --fg: #e8e8ec;
+  --fg-dim: #8b8fa0;
+  --accent: #58c2ff;
+  --accent-strong: #2aa3ff;
+  --danger: #ff5566;
+  --surface: rgba(255, 255, 255, 0.06);
+  --surface-strong: rgba(255, 255, 255, 0.1);
+  --border: rgba(255, 255, 255, 0.08);
+  --digit-shadow: 0 0 32px rgba(88, 194, 255, 0.18);
+}

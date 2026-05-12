@@ -1,0 +1,102 @@
+[data-theme="dos"] {
+  --bg: #0000aa;
+  --bg-elev: #0000aa;
+  --fg: #ffffff;
+  --fg-dim: #aaaaaa;
+  --accent: #ffff55;
+  --accent-strong: #ffff00;
+  --danger: #ff5555;
+  --surface: #0000aa;
+  --surface-strong: #5555ff;
+  --border: #aaaaaa;
+  --shadow: none;
+  --font-display: "Px437 IBM VGA8", "Perfect DOS VGA 437", "VT323", "Courier New", monospace;
+  --font-mono: var(--font-display);
+  --digit-shadow: none;
+  --button-shadow: none;
+  --scanline-opacity: 0.08;
+}
+
+[data-theme="dos"] body,
+[data-theme="dos"] .app {
+  background: #0000aa;
+}
+
+[data-theme="dos"] .clock {
+  font-weight: 400;
+  letter-spacing: 0;
+  font-family: var(--font-display);
+}
+
+[data-theme="dos"] .btn {
+  border-radius: 0;
+  border-width: 1px;
+  border-style: solid;
+  background: #0000aa;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  box-shadow: inset 1px 1px 0 #5555ff, inset -1px -1px 0 #000088;
+}
+
+[data-theme="dos"] .btn.primary {
+  background: #aaaaaa;
+  color: #0000aa;
+}
+
+[data-theme="dos"] .btn::before {
+  content: "[ ";
+  color: var(--accent);
+}
+
+[data-theme="dos"] .btn::after {
+  content: " ]";
+  color: var(--accent);
+}
+
+[data-theme="dos"] .btn .icon {
+  display: none;
+}
+
+[data-theme="dos"] .picker,
+[data-theme="dos"] .network-badge,
+[data-theme="dos"] .sound-list,
+[data-theme="dos"] .toggle-row,
+[data-theme="dos"] .theme-tile {
+  border-radius: 0;
+  background: #0000aa;
+  border: 1px solid #aaaaaa;
+}
+
+[data-theme="dos"] .preset-chip {
+  border-radius: 0;
+  border: 1px solid #aaaaaa;
+  background: #0000aa;
+  color: #ffffff;
+}
+
+[data-theme="dos"] .preset-chip[data-default="true"]::before {
+  content: ">";
+  color: var(--accent);
+  margin-right: 4px;
+}
+
+[data-theme="dos"] .countdown-ring svg {
+  display: none;
+}
+
+[data-theme="dos"] .clock-date,
+[data-theme="dos"] .topbar .title {
+  color: var(--fg);
+  font-weight: 400;
+}
+
+[data-theme="dos"] .clock .sep {
+  animation: dos-blink 1s steps(1) infinite;
+}
+
+@keyframes dos-blink {
+  50% {
+    opacity: 0;
+  }
+}

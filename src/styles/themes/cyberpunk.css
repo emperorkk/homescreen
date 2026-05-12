@@ -1,0 +1,39 @@
+[data-theme="cyberpunk"] {
+  --bg: #0a0420;
+  --bg-elev: #14082e;
+  --fg: #f0f8ff;
+  --fg-dim: #8a7cf2;
+  --accent: #ff2ec4;
+  --accent-strong: #00f0ff;
+  --danger: #ff3860;
+  --surface: rgba(255, 46, 196, 0.08);
+  --surface-strong: rgba(0, 240, 255, 0.16);
+  --border: rgba(0, 240, 255, 0.32);
+  --shadow: 0 0 32px rgba(255, 46, 196, 0.4);
+  --font-display: "Orbitron", "Rajdhani", ui-sans-serif, sans-serif;
+  --digit-shadow: 0 0 8px #ff2ec4, 0 0 18px #ff2ec4, 0 0 32px #00f0ff;
+  --button-shadow: 0 0 18px rgba(255, 46, 196, 0.35);
+  --scanline-opacity: 0.18;
+}
+
+[data-theme="cyberpunk"] .clock {
+  color: #f0f8ff;
+  position: relative;
+}
+
+[data-theme="cyberpunk"] .btn.primary {
+  background: #ff2ec4;
+  color: #0a0420;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+  border: 1px solid #00f0ff;
+}
+
+[data-theme="cyberpunk"] .network-badge .dot {
+  background: #00f0ff;
+  box-shadow: 0 0 8px #00f0ff;
+}
+
+[data-theme="cyberpunk"] .countdown-ring .ring-progress {
+  stroke: #ff2ec4;
+  filter: drop-shadow(0 0 12px #ff2ec4) drop-shadow(0 0 18px #00f0ff);
+}

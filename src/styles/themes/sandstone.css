@@ -1,0 +1,25 @@
+[data-theme="sandstone"] {
+  --bg: #3a2418;
+  --bg-elev: #4a2f20;
+  --fg: #f4e2c4;
+  --fg-dim: #c7a787;
+  --accent: #9b111e;
+  --accent-strong: #c7172a;
+  --danger: #ff7548;
+  --surface: rgba(244, 226, 196, 0.06);
+  --surface-strong: rgba(244, 226, 196, 0.12);
+  --border: rgba(244, 226, 196, 0.18);
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --font-display: "Cinzel", "Trajan Pro", Georgia, serif;
+  --digit-shadow: 0 2px 0 rgba(60, 20, 8, 0.6), 0 0 24px rgba(155, 17, 30, 0.15);
+}
+
+[data-theme="sandstone"] .btn.primary {
+  background: linear-gradient(180deg, #c7172a, #9b111e 65%, #6d0a16);
+  color: #f4e2c4;
+}
+
+[data-theme="sandstone"] .countdown-ring .ring-progress {
+  stroke: #c7172a;
+  filter: drop-shadow(0 0 10px rgba(199, 23, 42, 0.7));
+}

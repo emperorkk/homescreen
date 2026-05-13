@@ -15,6 +15,16 @@ function fmtPreset(s: number): string {
   return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
 }
 
+function fmtDuration(total: number): string {
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  if (h > 0) {
+    return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  }
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
 interface NotifLike {
   requestPermission?: () => Promise<NotificationPermission>;
   permission?: NotificationPermission;
@@ -46,9 +56,23 @@ export function renderTimer(root: HTMLElement): () => void {
   const engine = new TimerEngine();
   const state = getState();
 
-  // ---------- setup view ----------
-  const picker = createWheelPicker(state.defaultPresetSeconds || 60);
+  let selectedSeconds = state.defaultPresetSeconds || 60;
+  let activePickerDispose: (() => void) | null = null;
 
+  // ---------- duration display (opens picker modal) ----------
+  const durationValue = el("div", { class: "value" }, [fmtDuration(selectedSeconds)]);
+  const durationDisplay = el(
+    "button",
+    {
+      class: "duration-display",
+      type: "button",
+      "aria-label": "Set time",
+      onclick: () => openPickerModal(),
+    },
+    [durationValue, el("div", { class: "hint" }, ["Tap to set time"])],
+  );
+
+  // ---------- presets ----------
   const presetEls: HTMLButtonElement[] = [];
   const presets = el("div", { class: "presets", role: "group" }, []);
   for (const s of PRESETS_SEC) {
@@ -67,9 +91,7 @@ export function renderTimer(root: HTMLElement): () => void {
       vibrate([10, 30, 10]);
       setState({ defaultPresetSeconds: s });
       for (const b of presetEls)
-        b.dataset.default = String(
-          Number(b.dataset.seconds) === s,
-        );
+        b.dataset.default = String(Number(b.dataset.seconds) === s);
     };
     btn.addEventListener("pointerdown", () => {
       longPressTimer = window.setTimeout(longPress, 550);
@@ -79,12 +101,18 @@ export function renderTimer(root: HTMLElement): () => void {
     btn.addEventListener("pointercancel", () => clearTimeout(longPressTimer));
     btn.addEventListener("click", () => {
       vibrate(10);
-      picker.setSeconds(s, true);
+      setSelectedSeconds(s);
     });
     presetEls.push(btn);
     presets.append(btn);
   }
 
+  function setSelectedSeconds(s: number) {
+    selectedSeconds = s;
+    durationValue.textContent = fmtDuration(s);
+  }
+
+  // ---------- buttons ----------
   const startBtn = el("button", { class: "btn primary", type: "button" }, ["Start"]);
   const backBtn = el(
     "button",
@@ -100,10 +128,72 @@ export function renderTimer(root: HTMLElement): () => void {
   );
 
   const setupView = el("section", { class: "view view-setup" }, [
+    durationDisplay,
     presets,
-    picker.node,
     el("div", { class: "btn-row" }, [backBtn, startBtn]),
   ]);
+
+  // ---------- modal picker ----------
+  function openPickerModal() {
+    vibrate(8);
+    if (activePickerDispose) return;
+
+    const picker = createWheelPicker(selectedSeconds);
+
+    const cancelBtn = el(
+      "button",
+      { class: "btn ghost", type: "button" },
+      ["Cancel"],
+    );
+    const setBtn = el(
+      "button",
+      { class: "btn primary", type: "button" },
+      ["Set"],
+    );
+
+    const modal = el("div", { class: "modal", role: "dialog", "aria-modal": "true" }, [
+      el("div", { class: "modal-grabber", "aria-hidden": "true" }),
+      el("div", { class: "modal-title" }, ["Set time"]),
+      picker.node,
+      el("div", { class: "btn-row" }, [cancelBtn, setBtn]),
+    ]);
+
+    const backdrop = el("div", { class: "modal-backdrop" }, [modal]);
+
+    function close() {
+      backdrop.removeEventListener("click", onBackdrop);
+      cancelBtn.removeEventListener("click", close);
+      setBtn.removeEventListener("click", onSet);
+      modal.removeEventListener("click", stopProp);
+      document.removeEventListener("keydown", onKey);
+      picker.dispose();
+      backdrop.remove();
+      activePickerDispose = null;
+    }
+    function onSet() {
+      vibrate(10);
+      setSelectedSeconds(picker.getSeconds());
+      close();
+    }
+    function onBackdrop() {
+      close();
+    }
+    function stopProp(e: Event) {
+      e.stopPropagation();
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") close();
+    }
+
+    backdrop.addEventListener("click", onBackdrop);
+    modal.addEventListener("click", stopProp);
+    cancelBtn.addEventListener("click", close);
+    setBtn.addEventListener("click", onSet);
+    document.addEventListener("keydown", onKey);
+
+    document.body.append(backdrop);
+    activePickerDispose = close;
+  }
 
   // ---------- countdown view ----------
   const RING_R = 140;
@@ -208,12 +298,11 @@ export function renderTimer(root: HTMLElement): () => void {
   }
 
   startBtn.addEventListener("click", () => {
-    const seconds = picker.getSeconds();
-    if (seconds <= 0) {
+    if (selectedSeconds <= 0) {
       vibrate([20, 40, 20]);
       return;
     }
-    void startCountdown(seconds);
+    void startCountdown(selectedSeconds);
   });
 
   pauseBtn.addEventListener("click", () => {
@@ -246,7 +335,7 @@ export function renderTimer(root: HTMLElement): () => void {
     stopSound();
     void releaseWakeLock();
     if (releaseVis) releaseVis();
-    picker.dispose();
+    if (activePickerDispose) activePickerDispose();
     setTimerProgress(0);
   };
 }

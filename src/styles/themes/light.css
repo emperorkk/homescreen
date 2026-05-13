@@ -8,8 +8,19 @@
   --danger: #d6364c;
   --surface: rgba(0, 0, 0, 0.04);
   --surface-strong: rgba(0, 0, 0, 0.08);
-  --border: rgba(0, 0, 0, 0.08);
+  --border: rgba(0, 0, 0, 0.12);
   --shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
   --digit-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
-  --button-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --button-shadow: 0 2px 8px rgba(76, 91, 255, 0.18);
+}
+
+[data-theme="light"] .btn.primary {
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(76, 91, 255, 0.32);
+}
+
+[data-theme="light"] .btn.ghost {
+  border-color: rgba(76, 91, 255, 0.4);
+  color: #2533e0;
+  background: rgba(76, 91, 255, 0.05);
 }

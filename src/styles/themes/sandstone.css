@@ -17,6 +17,14 @@
 [data-theme="sandstone"] .btn.primary {
   background: linear-gradient(180deg, #c7172a, #9b111e 65%, #6d0a16);
   color: #f4e2c4;
+  border: 1px solid rgba(244, 226, 196, 0.18);
+  box-shadow: 0 6px 22px rgba(155, 17, 30, 0.4);
+}
+
+[data-theme="sandstone"] .btn.ghost {
+  border-color: rgba(244, 226, 196, 0.4);
+  color: #f4e2c4;
+  background: rgba(155, 17, 30, 0.12);
 }
 
 [data-theme="sandstone"] .countdown-ring .ring-progress {

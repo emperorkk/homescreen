@@ -10,4 +10,15 @@
   --surface-strong: rgba(255, 255, 255, 0.1);
   --border: rgba(255, 255, 255, 0.08);
   --digit-shadow: 0 0 32px rgba(88, 194, 255, 0.18);
+  --button-shadow: 0 4px 18px rgba(88, 194, 255, 0.15);
+}
+
+[data-theme="dark"] .btn.primary {
+  box-shadow: 0 4px 18px rgba(88, 194, 255, 0.32);
+}
+
+[data-theme="dark"] .btn.ghost {
+  border-color: rgba(88, 194, 255, 0.35);
+  color: #cfe9ff;
+  background: rgba(88, 194, 255, 0.06);
 }

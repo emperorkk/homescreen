@@ -25,10 +25,36 @@
 }
 
 [data-theme="marble"] .clock {
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  background: var(--digit-gradient);
   background-clip: text;
   -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: marble-shimmer 8s ease-in-out infinite;
+}
+
+@keyframes marble-shimmer {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.15);
+  }
+}
+
+[data-theme="marble"] .btn.ghost {
+  border-color: rgba(212, 175, 55, 0.45);
+  color: #f0c850;
+  background: rgba(212, 175, 55, 0.04);
+}
+
+[data-theme="marble"] .duration-display .value {
+  background: var(--digit-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
 [data-theme="marble"] .clock-ampm {

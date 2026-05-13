@@ -214,11 +214,20 @@ export function renderTimer(root: HTMLElement): () => void {
   });
   const ringSvg = svg("svg", { viewBox: "0 0 300 300" }, [ringTrack, ringProgress]);
   const timeText = el("div", { class: "countdown-time" }, ["00:00"]);
-  const countdownInner = el("div", { class: "countdown-ring" }, [ringSvg, timeText]);
+  const countdownHint = el("div", { class: "countdown-hint" }, ["Double-tap to stop"]);
+  const countdownInner = el(
+    "div",
+    {
+      class: "countdown-ring",
+      role: "button",
+      "aria-label": "Countdown — double-tap to stop",
+    },
+    [ringSvg, timeText, countdownHint],
+  );
 
   const pauseBtn = el("button", { class: "btn", type: "button" }, ["Pause"]);
   const stopBtn = el("button", { class: "btn danger", type: "button" }, ["Stop"]);
-  const countdownButtons = el("div", { class: "btn-row" }, [pauseBtn, stopBtn]);
+  const countdownButtons = el("div", { class: "btn-row bottom" }, [pauseBtn, stopBtn]);
 
   const countdownView = el("section", { class: "view view-countdown countdown", hidden: true }, [
     countdownInner,
@@ -239,6 +248,7 @@ export function renderTimer(root: HTMLElement): () => void {
   function showSetup() {
     setupView.hidden = false;
     countdownView.hidden = true;
+    topbar.hidden = false;
     countdownView.classList.remove("is-done");
     setTimerProgress(0);
   }
@@ -246,6 +256,7 @@ export function renderTimer(root: HTMLElement): () => void {
   function showCountdown() {
     setupView.hidden = true;
     countdownView.hidden = false;
+    topbar.hidden = true;
   }
 
   function tick() {
@@ -327,6 +338,21 @@ export function renderTimer(root: HTMLElement): () => void {
     vibrate(12);
     stopAll();
   });
+
+  // Double-tap (or double-click) on the countdown ring reveals the full interface
+  let lastTap = 0;
+  function onCountdownTap(e: Event) {
+    e.preventDefault();
+    const now = Date.now();
+    if (now - lastTap < 350) {
+      lastTap = 0;
+      vibrate([10, 30, 10]);
+      stopAll();
+    } else {
+      lastTap = now;
+    }
+  }
+  countdownInner.addEventListener("pointerup", onCountdownTap);
 
   showSetup();
 

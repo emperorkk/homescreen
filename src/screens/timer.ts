@@ -7,12 +7,14 @@ import { playSound, stopSound } from "../audio/library";
 import { getState, setState } from "../state";
 import { setTimerProgress } from "../webgl/renderer";
 
-const PRESETS_SEC = [5, 15, 20, 30, 60, 90, 120];
+// Preset durations expressed in MINUTES.
+// 00:05 = 5 min, 01:30 = 1 h 30 min, etc.
+const PRESETS_MIN = [5, 15, 20, 30, 60, 90, 120];
 
-function fmtPreset(s: number): string {
-  const m = Math.floor(s / 60);
-  const sec = s % 60;
-  return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+function fmtPreset(min: number): string {
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
 function fmtDuration(total: number): string {
@@ -75,23 +77,24 @@ export function renderTimer(root: HTMLElement): () => void {
   // ---------- presets ----------
   const presetEls: HTMLButtonElement[] = [];
   const presets = el("div", { class: "presets", role: "group" }, []);
-  for (const s of PRESETS_SEC) {
+  for (const min of PRESETS_MIN) {
+    const sec = min * 60;
     const btn = el(
       "button",
       {
         class: "preset-chip",
         type: "button",
-        "data-seconds": s,
-        "data-default": String(s === getState().defaultPresetSeconds),
+        "data-seconds": sec,
+        "data-default": String(sec === getState().defaultPresetSeconds),
       },
-      [fmtPreset(s)],
+      [fmtPreset(min)],
     );
     let longPressTimer = 0;
     const longPress = () => {
       vibrate([10, 30, 10]);
-      setState({ defaultPresetSeconds: s });
+      setState({ defaultPresetSeconds: sec });
       for (const b of presetEls)
-        b.dataset.default = String(Number(b.dataset.seconds) === s);
+        b.dataset.default = String(Number(b.dataset.seconds) === sec);
     };
     btn.addEventListener("pointerdown", () => {
       longPressTimer = window.setTimeout(longPress, 550);
@@ -101,7 +104,7 @@ export function renderTimer(root: HTMLElement): () => void {
     btn.addEventListener("pointercancel", () => clearTimeout(longPressTimer));
     btn.addEventListener("click", () => {
       vibrate(10);
-      setSelectedSeconds(s);
+      setSelectedSeconds(sec);
     });
     presetEls.push(btn);
     presets.append(btn);
@@ -214,24 +217,27 @@ export function renderTimer(root: HTMLElement): () => void {
   });
   const ringSvg = svg("svg", { viewBox: "0 0 300 300" }, [ringTrack, ringProgress]);
   const timeText = el("div", { class: "countdown-time" }, ["00:00"]);
-  const countdownHint = el("div", { class: "countdown-hint" }, ["Double-tap to stop"]);
+  const countdownHint = el("div", { class: "countdown-hint" }, [
+    "Tap: pause   ·   Double-tap: exit",
+  ]);
   const countdownInner = el(
     "div",
     {
       class: "countdown-ring",
       role: "button",
-      "aria-label": "Countdown — double-tap to stop",
+      "aria-label": "Countdown — tap to pause, double-tap to exit",
     },
     [ringSvg, timeText, countdownHint],
   );
+  const countdownStage = el("div", { class: "countdown-stage" }, [countdownInner]);
 
   const pauseBtn = el("button", { class: "btn", type: "button" }, ["Pause"]);
   const stopBtn = el("button", { class: "btn danger", type: "button" }, ["Stop"]);
-  const countdownButtons = el("div", { class: "btn-row bottom" }, [pauseBtn, stopBtn]);
+  const countdownButtons = el("div", { class: "btn-row" }, [pauseBtn, stopBtn]);
 
   const countdownView = el("section", { class: "view view-countdown countdown", hidden: true }, [
-    countdownInner,
     countdownButtons,
+    countdownStage,
   ]);
 
   // ---------- top bar ----------
@@ -249,7 +255,8 @@ export function renderTimer(root: HTMLElement): () => void {
     setupView.hidden = false;
     countdownView.hidden = true;
     topbar.hidden = false;
-    countdownView.classList.remove("is-done");
+    countdownView.classList.remove("is-done", "is-paused");
+    pauseBtn.textContent = "Pause";
     setTimerProgress(0);
   }
 
@@ -316,22 +323,28 @@ export function renderTimer(root: HTMLElement): () => void {
     void startCountdown(selectedSeconds);
   });
 
-  pauseBtn.addEventListener("click", () => {
-    vibrate(8);
+  function togglePause() {
     const status = engine.getStatus();
     if (status === "running") {
       engine.pause();
       pauseBtn.textContent = "Resume";
+      countdownView.classList.add("is-paused");
       cancelAnimationFrame(rafId);
       void releaseWakeLock();
     } else if (status === "paused") {
       engine.resume();
       pauseBtn.textContent = "Pause";
+      countdownView.classList.remove("is-paused");
       void acquireWakeLock();
       rafId = requestAnimationFrame(tick);
     } else if (status === "done") {
       stopAll();
     }
+  }
+
+  pauseBtn.addEventListener("click", () => {
+    vibrate(8);
+    togglePause();
   });
 
   stopBtn.addEventListener("click", () => {
@@ -339,18 +352,29 @@ export function renderTimer(root: HTMLElement): () => void {
     stopAll();
   });
 
-  // Double-tap (or double-click) on the countdown ring reveals the full interface
-  let lastTap = 0;
+  // Single tap on the ring = pause/resume. Double tap = exit and reveal setup.
+  const TAP_WINDOW = 320;
+  let pendingTapTimer = 0;
+  let lastTapAt = 0;
   function onCountdownTap(e: Event) {
     e.preventDefault();
     const now = Date.now();
-    if (now - lastTap < 350) {
-      lastTap = 0;
+    if (now - lastTapAt < TAP_WINDOW) {
+      // double-tap: cancel pending single-tap pause, exit instead
+      clearTimeout(pendingTapTimer);
+      pendingTapTimer = 0;
+      lastTapAt = 0;
       vibrate([10, 30, 10]);
       stopAll();
-    } else {
-      lastTap = now;
+      return;
     }
+    lastTapAt = now;
+    clearTimeout(pendingTapTimer);
+    pendingTapTimer = window.setTimeout(() => {
+      pendingTapTimer = 0;
+      vibrate(8);
+      togglePause();
+    }, TAP_WINDOW);
   }
   countdownInner.addEventListener("pointerup", onCountdownTap);
 
@@ -358,6 +382,7 @@ export function renderTimer(root: HTMLElement): () => void {
 
   return () => {
     cancelAnimationFrame(rafId);
+    clearTimeout(pendingTapTimer);
     stopSound();
     void releaseWakeLock();
     if (releaseVis) releaseVis();

@@ -358,27 +358,39 @@ body {
 .countdown {
   flex: 1;
   display: grid;
-  grid-template-rows: 1fr auto;
-  align-items: center;
-  justify-items: center;
+  grid-template-rows: auto 1fr;
+  align-items: stretch;
+  justify-items: stretch;
   gap: 14px;
   position: relative;
 }
 
 .countdown .btn-row {
   width: 100%;
-  align-self: end;
+}
+
+.countdown-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
 }
 
 .countdown-ring {
   position: relative;
-  width: min(82vw, 380px);
+  width: min(94vw, 100%);
+  max-width: 720px;
+  height: min(100%, 94vw);
   aspect-ratio: 1;
   display: grid;
   place-items: center;
   cursor: pointer;
   -webkit-user-select: none;
   user-select: none;
+  container-type: inline-size;
+  container-name: ring;
 }
 
 .countdown-ring svg {
@@ -405,21 +417,34 @@ body {
 }
 
 .countdown-time {
-  font-size: clamp(72px, 22vw, 132px);
+  font-size: 26cqi;
   font-variant-numeric: tabular-nums;
   font-weight: 200;
   letter-spacing: -0.02em;
   color: var(--fg);
   text-shadow: var(--digit-shadow);
+  line-height: 1;
 }
 
 .countdown-hint {
-  font-size: 10px;
+  font-size: 2.4cqi;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--fg-dim);
-  margin-top: 18px;
-  opacity: 0.65;
+  margin-top: 4cqi;
+  opacity: 0.6;
+  text-align: center;
+}
+
+.countdown.is-paused .countdown-time {
+  opacity: 0.55;
+  animation: paused-blink 1.4s ease-in-out infinite;
+}
+
+@keyframes paused-blink {
+  50% {
+    opacity: 0.9;
+  }
 }
 
 .countdown.is-done .countdown-time {

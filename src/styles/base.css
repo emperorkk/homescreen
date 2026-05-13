@@ -4,6 +4,14 @@
   box-sizing: border-box;
 }
 
+/* Force-hide elements with [hidden] even when a later rule sets `display:`.
+   Without this, .view-setup { display: flex } and .countdown { display: grid }
+   defeat the user-agent [hidden] { display: none } rule and both screens
+   render at once. */
+[hidden] {
+  display: none !important;
+}
+
 html,
 body {
   margin: 0;
@@ -376,13 +384,16 @@ body {
   width: 100%;
   height: 100%;
   min-height: 0;
+  min-width: 0;
+  container-type: size;
+  container-name: stage;
 }
 
 .countdown-ring {
   position: relative;
-  width: min(94vw, 100%);
-  max-width: 720px;
-  height: min(100%, 94vw);
+  /* Largest square that fits both the stage width and the stage height,
+     capped at 560px. cqi/cqb read the stage container. */
+  width: min(100cqi, 100cqb, 560px);
   aspect-ratio: 1;
   display: grid;
   place-items: center;

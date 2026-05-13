@@ -428,21 +428,34 @@ body {
 }
 
 .countdown-time {
-  font-size: 26cqi;
+  font-size: 34cqi;
   font-variant-numeric: tabular-nums;
   font-weight: 200;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   color: var(--fg);
   text-shadow: var(--digit-shadow);
   line-height: 1;
+  text-align: center;
+}
+
+/* Shrink the digits when hours are shown so they still fit the circle.
+   MM:SS = 5 chars, H:MM:SS = 7, HH:MM:SS = 8. */
+.countdown-time[data-len="7"] {
+  font-size: 24cqi;
+}
+.countdown-time[data-len="8"] {
+  font-size: 21cqi;
 }
 
 .countdown-hint {
-  font-size: 2.4cqi;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 9%;
+  font-size: 2.6cqi;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--fg-dim);
-  margin-top: 4cqi;
   opacity: 0.6;
   text-align: center;
 }

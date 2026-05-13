@@ -218,7 +218,11 @@ export function renderTimer(root: HTMLElement): () => void {
     "stroke-dashoffset": "0",
   });
   const ringSvg = svg("svg", { viewBox: "0 0 300 300" }, [ringTrack, ringProgress]);
-  const timeText = el("div", { class: "countdown-time" }, ["00:00"]);
+  const timeText = el(
+    "div",
+    { class: "countdown-time", "data-len": "5" },
+    ["00:00"],
+  );
   const countdownHint = el("div", { class: "countdown-hint" }, [
     "Tap: pause   ·   Double-tap: exit",
   ]);
@@ -268,9 +272,15 @@ export function renderTimer(root: HTMLElement): () => void {
     topbar.hidden = true;
   }
 
+  function renderTime(ms: number) {
+    const s = formatRemaining(ms);
+    timeText.textContent = s;
+    timeText.dataset.len = String(s.length);
+  }
+
   function tick() {
     const snap = engine.snapshot();
-    timeText.textContent = formatRemaining(snap.remainingMs);
+    renderTime(snap.remainingMs);
     const offset = C * snap.progress;
     ringProgress.setAttribute("stroke-dashoffset", String(offset));
     setTimerProgress(snap.progress);
@@ -306,7 +316,7 @@ export function renderTimer(root: HTMLElement): () => void {
     countdownView.classList.add("is-done");
     countdownInner.classList.remove("is-beating");
     heartbeat.stop();
-    timeText.textContent = "00:00";
+    renderTime(0);
     setTimerProgress(1);
     vibrate([200, 80, 200, 80, 400]);
     const id = getState().selectedSoundId;

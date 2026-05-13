@@ -130,7 +130,7 @@ export function renderTimer(root: HTMLElement): () => void {
   const setupView = el("section", { class: "view view-setup" }, [
     durationDisplay,
     presets,
-    el("div", { class: "btn-row" }, [backBtn, startBtn]),
+    el("div", { class: "btn-row bottom" }, [backBtn, startBtn]),
   ]);
 
   // ---------- modal picker ----------

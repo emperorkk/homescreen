@@ -42,20 +42,39 @@ float fbm(vec2 p){
 }
 
 vec3 themeDark(vec2 uv, float t){
-  vec3 c1 = vec3(0.043, 0.047, 0.063);
-  vec3 c2 = vec3(0.090, 0.110, 0.157);
-  float n = fbm(uv * 1.8 + vec2(0.0, t * 0.02));
-  vec3 col = mix(c1, c2, smoothstep(0.3, 0.8, n));
-  float pulse = 0.04 * sin(t * 0.6 + uv.y * 4.0);
-  col += vec3(0.0, 0.05, 0.10) * pulse * 0.6;
+  vec3 c1 = vec3(0.040, 0.047, 0.070);
+  vec3 c2 = vec3(0.18, 0.28, 0.45);
+  vec3 c3 = vec3(0.30, 0.10, 0.45);
+  vec2 q1 = vec2(0.3 + sin(t * 0.18) * 0.25, 0.35 + cos(t * 0.13) * 0.20);
+  vec2 q2 = vec2(0.75 + cos(t * 0.11) * 0.30, 0.70 + sin(t * 0.16) * 0.22);
+  float b1 = 1.0 - smoothstep(0.0, 0.55, length(uv - q1));
+  float b2 = 1.0 - smoothstep(0.0, 0.65, length(uv - q2));
+  float n = fbm(uv * 1.6 + vec2(0.0, t * 0.08));
+  vec3 col = mix(c1, c1 * 2.2, smoothstep(0.2, 0.9, n) * 0.4);
+  col = mix(col, c2, b1 * 0.65);
+  col = mix(col, c3, b2 * 0.55);
+  col += vec3(0.06, 0.12, 0.25) * (0.5 + 0.5 * sin(t * 0.7 + uv.y * 3.0)) * 0.10;
   return col;
 }
 
 vec3 themeLight(vec2 uv, float t){
-  vec3 c1 = vec3(0.98, 0.98, 0.96);
-  vec3 c2 = vec3(0.86, 0.88, 0.96);
-  float n = fbm(uv * 1.4 + vec2(t * 0.015, 0.0));
-  return mix(c1, c2, smoothstep(0.35, 0.85, n));
+  vec3 base = vec3(0.97, 0.97, 0.95);
+  vec3 a = vec3(0.70, 0.78, 0.98);
+  vec3 b = vec3(0.98, 0.82, 0.96);
+  vec3 c = vec3(0.86, 0.96, 0.88);
+  vec2 q1 = vec2(0.25 + sin(t * 0.14) * 0.30, 0.30 + cos(t * 0.09) * 0.22);
+  vec2 q2 = vec2(0.78 + cos(t * 0.11) * 0.25, 0.72 + sin(t * 0.13) * 0.25);
+  vec2 q3 = vec2(0.50 + sin(t * 0.07) * 0.35, 0.50 + cos(t * 0.10) * 0.30);
+  float b1 = 1.0 - smoothstep(0.0, 0.55, length(uv - q1));
+  float b2 = 1.0 - smoothstep(0.0, 0.55, length(uv - q2));
+  float b3 = 1.0 - smoothstep(0.0, 0.65, length(uv - q3));
+  vec3 col = base;
+  col = mix(col, a, b1 * 0.75);
+  col = mix(col, b, b2 * 0.75);
+  col = mix(col, c, b3 * 0.45);
+  float n = fbm(uv * 2.2 + t * 0.06);
+  col = mix(col, a, n * 0.10);
+  return col;
 }
 
 vec3 themeMarble(vec2 uv, float t){
@@ -72,30 +91,37 @@ vec3 themeMarble(vec2 uv, float t){
 }
 
 vec3 themeSandstone(vec2 uv, float t){
-  vec2 q = uv * 2.5 + vec2(t * 0.01, 0.0);
+  vec2 q = uv * 2.5 + vec2(t * 0.10, t * 0.04);
   float n = fbm(q);
-  float bands = 0.5 + 0.5 * sin(uv.y * 16.0 + n * 6.0);
-  vec3 sand = mix(vec3(0.45, 0.30, 0.18), vec3(0.78, 0.58, 0.36), n);
+  float bands = 0.5 + 0.5 * sin(uv.y * 14.0 + n * 8.0 + t * 0.4);
+  vec3 sand = mix(vec3(0.40, 0.26, 0.15), vec3(0.88, 0.64, 0.38), n);
   vec3 deep = vec3(0.22, 0.13, 0.08);
-  vec3 col = mix(deep, sand, bands * 0.75 + 0.25);
-  vec3 ruby = vec3(0.6, 0.05, 0.10);
-  float gleam = pow(smoothstep(0.7, 1.0, fbm(q * 4.0)), 4.0);
-  col = mix(col, ruby, gleam * 0.4);
+  vec3 col = mix(deep, sand, bands * 0.85 + 0.15);
+  vec3 ruby = vec3(0.72, 0.07, 0.14);
+  float gleam = pow(smoothstep(0.6, 1.0, fbm(q * 3.5 + t * 0.25)), 2.5);
+  col = mix(col, ruby, gleam * 0.65);
+  float dust = fbm(uv * 6.0 + t * 0.3);
+  col += vec3(0.10, 0.06, 0.03) * dust * 0.3;
   return col;
 }
 
 vec3 themeCyberpunk(vec2 uv, float t){
   vec2 q = uv;
-  q.x += sin(uv.y * 30.0 + t * 1.2) * 0.005;
-  vec3 a = vec3(0.04, 0.02, 0.12);
+  q.x += sin(uv.y * 24.0 + t * 1.6) * 0.012;
+  vec3 a = vec3(0.04, 0.02, 0.14);
   vec3 b = vec3(1.0, 0.18, 0.77);
   vec3 c = vec3(0.0, 0.94, 1.0);
-  float n = fbm(q * 2.2 + t * 0.08);
-  vec3 col = mix(a, mix(b, c, n), pow(n, 1.4));
-  float grid = step(0.97, fract(uv.y * 60.0 + t * 0.4));
-  col += vec3(0.0, 0.5, 0.6) * grid * 0.15;
-  float scan = 0.5 + 0.5 * sin(uv.y * uRes.y * 1.5);
-  col *= (0.85 + scan * 0.15);
+  float wave1 = 0.5 + 0.5 * sin(uv.y * 5.0 - t * 1.0);
+  float wave2 = 0.5 + 0.5 * cos(uv.x * 4.0 + t * 0.7);
+  float n = fbm(q * 2.4 + t * 0.18);
+  vec3 col = a;
+  col = mix(col, b, wave1 * 0.55);
+  col = mix(col, c, wave2 * 0.55);
+  col = mix(col, mix(b, c, n), pow(n, 1.2) * 0.35);
+  float grid = step(0.95, fract(uv.y * 60.0 + t * 0.8));
+  col += vec3(0.0, 0.5, 0.6) * grid * 0.30;
+  float scan = 0.5 + 0.5 * sin(uv.y * uRes.y * 1.2 + t * 4.0);
+  col *= (0.78 + scan * 0.22);
   return col;
 }
 

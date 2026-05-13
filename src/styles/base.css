@@ -44,16 +44,16 @@ body {
 .app {
   position: relative;
   z-index: 1;
-}
-
-.app {
-  position: relative;
   min-height: 100dvh;
   padding: calc(var(--safe-top) + 16px) calc(var(--safe-right) + 20px)
     calc(var(--safe-bottom) + 16px) calc(var(--safe-left) + 20px);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
+}
+
+.spacer {
+  flex: 1;
 }
 
 /* Scanline overlay used by cyberpunk + dos */
@@ -173,6 +173,10 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
+}
+
+.btn-row.bottom {
+  margin-top: auto;
 }
 
 .btn {
@@ -604,8 +608,8 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 28px 20px;
+  gap: 6px;
+  padding: 18px 16px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -623,7 +627,7 @@ body {
 
 .duration-display .value {
   font-family: var(--font-display);
-  font-size: clamp(64px, 18vw, 112px);
+  font-size: clamp(48px, 14vw, 88px);
   font-weight: 200;
   letter-spacing: -0.03em;
   line-height: 1;
@@ -633,10 +637,17 @@ body {
 }
 
 .duration-display .hint {
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--fg-dim);
+}
+
+.view-setup {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
 }
 
 /* ---------- Modal ---------- */

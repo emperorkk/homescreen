@@ -37,7 +37,7 @@ export function renderHome(root: HTMLElement): () => void {
     },
     ["Settings"],
   );
-  const buttons = el("div", { class: "btn-row" }, [timerBtn, settingsBtn]);
+  const buttons = el("div", { class: "btn-row bottom" }, [timerBtn, settingsBtn]);
 
   root.append(topbar, clock.node, buttons);
 

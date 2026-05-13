@@ -28,6 +28,14 @@ function fmtDuration(total: number): string {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
+let pendingAutoStart: number | null = null;
+
+// Called from the home screen quick-start chip to launch the timer view and
+// immediately begin counting down with the supplied seconds.
+export function requestAutoStart(seconds: number): void {
+  pendingAutoStart = seconds;
+}
+
 interface NotifLike {
   requestPermission?: () => Promise<NotificationPermission>;
   permission?: NotificationPermission;
@@ -407,6 +415,15 @@ export function renderTimer(root: HTMLElement): () => void {
   countdownInner.addEventListener("pointerup", onCountdownTap);
 
   showSetup();
+
+  if (pendingAutoStart !== null) {
+    const secs = pendingAutoStart;
+    pendingAutoStart = null;
+    setSelectedSeconds(secs);
+    // Defer slightly so the DOM commits + first paint happens before we
+    // swap to the countdown view.
+    setTimeout(() => void startCountdown(secs), 80);
+  }
 
   return () => {
     cancelAnimationFrame(rafId);

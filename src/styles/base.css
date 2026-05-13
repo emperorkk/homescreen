@@ -835,6 +835,317 @@ body {
   }
 }
 
+/* ---------- Home screen ---------- */
+.topbar-end {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.greeting {
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  margin-bottom: -4px;
+}
+
+.home-clock {
+  gap: 8px;
+}
+
+.date-block {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--fg-dim);
+  font: inherit;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  transition: background 0.15s, transform 0.08s;
+}
+
+.date-block:active {
+  transform: scale(0.98);
+  background: var(--surface);
+}
+
+.date-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  justify-content: center;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.date-meta .meta.holiday {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.date-meta .meta.nameday {
+  color: var(--fg);
+}
+
+.date-meta .meta.hint {
+  color: var(--fg-dim);
+  opacity: 0.55;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.moon-badge {
+  font-size: 18px;
+  line-height: 1;
+  opacity: 0.85;
+}
+
+/* ---------- Chips ---------- */
+.chip {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--fg);
+  border-radius: var(--radius-pill);
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  min-height: 32px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.08s, border-color 0.15s;
+}
+
+.chip:active {
+  transform: scale(0.96);
+  background: var(--surface-strong);
+}
+
+.weather-chip .icon {
+  font-size: 14px;
+}
+
+.weather-chip .temp {
+  font-variant-numeric: tabular-nums;
+}
+
+.install-chip {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.quick-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.quick-chip {
+  font-size: 13px;
+  padding: 10px 18px;
+  min-height: 40px;
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
+}
+
+.quick-chip .icon {
+  color: var(--accent);
+}
+
+/* ---------- Sun arc ---------- */
+.sun-arc {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--fg-dim);
+}
+
+.sun-arc .label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sun-arc-svg {
+  width: 100%;
+  height: 56px;
+  display: block;
+}
+
+.sun-arc-path {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 4;
+  opacity: 0.5;
+}
+
+.sun-arc-baseline {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.sun-arc-dot {
+  fill: var(--accent);
+  filter: drop-shadow(0 0 6px var(--accent));
+  transition: cx 0.4s linear, cy 0.4s linear;
+}
+
+.sun-arc-dot.night {
+  fill: var(--fg-dim);
+  filter: none;
+  opacity: 0.6;
+}
+
+/* ---------- Calendar modal ---------- */
+.cal-modal {
+  gap: 10px;
+}
+
+.cal-title {
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  color: var(--fg);
+  text-align: center;
+  flex: 1;
+}
+
+.cal-header {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 6px;
+}
+
+.cal-nav {
+  min-height: 36px;
+  padding: 4px 0;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  background: var(--surface);
+  padding: 8px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.cal-wd {
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  padding: 4px 0;
+}
+
+.cal-cell {
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  min-height: 36px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s, border-color 0.15s, transform 0.08s;
+}
+
+.cal-cell:active {
+  transform: scale(0.94);
+}
+
+.cal-cell.empty {
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.cal-cell[data-today="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.cal-cell[data-holiday="true"]::after,
+.cal-cell[data-nameday="true"]::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--fg-dim);
+  transform: translateX(-50%);
+}
+
+.cal-cell[data-holiday="true"]::after {
+  background: var(--accent);
+}
+
+.cal-cell[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  border-color: var(--accent);
+}
+
+.cal-day-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  font-size: 13px;
+}
+
+.cal-day-date {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--fg-dim);
+  text-transform: uppercase;
+}
+
+.cal-holiday {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.cal-nameday {
+  color: var(--fg);
+}
+
+.cal-empty {
+  color: var(--fg-dim);
+  opacity: 0.6;
+  font-style: italic;
+}
+
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   .clock .sep {
@@ -842,5 +1153,8 @@ body {
   }
   .countdown.is-done .countdown-time {
     animation: none;
+  }
+  .sun-arc-dot {
+    transition: none;
   }
 }

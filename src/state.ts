@@ -12,6 +12,9 @@ export interface AppState {
   defaultPresetSeconds: number;
   vibrate: boolean;
   notifications: boolean;
+  heartbeatAudio: boolean;
+  heartbeatHaptic: boolean;
+  heartbeatVisual: boolean;
 }
 
 const KEY = "homescreen.state.v1";
@@ -22,6 +25,9 @@ const defaults: AppState = {
   defaultPresetSeconds: 300,
   vibrate: true,
   notifications: true,
+  heartbeatAudio: false,
+  heartbeatHaptic: false,
+  heartbeatVisual: true,
 };
 
 function read(): AppState {

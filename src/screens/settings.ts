@@ -227,7 +227,29 @@ export function renderSettings(root: HTMLElement): () => void {
     ),
   ]);
 
-  root.append(topbar, themeSection, soundSection, togglesSection);
+  const heartbeatSection = el("section", { class: "section" }, [
+    el("h2", {}, ["Heartbeat — every 3 s while counting"]),
+    toggleRow(
+      "Visual pulse",
+      "Ring + digits softly throb on each beat",
+      state.heartbeatVisual,
+      (v) => setState({ heartbeatVisual: v }),
+    ),
+    toggleRow(
+      "Audio click",
+      "Synth lub-dub through the speakers",
+      state.heartbeatAudio,
+      (v) => setState({ heartbeatAudio: v }),
+    ),
+    toggleRow(
+      "Vibration",
+      "Two short buzzes per beat",
+      state.heartbeatHaptic,
+      (v) => setState({ heartbeatHaptic: v }),
+    ),
+  ]);
+
+  root.append(topbar, themeSection, soundSection, togglesSection, heartbeatSection);
 
   void refreshSounds().then(paintSounds);
 

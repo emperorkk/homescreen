@@ -3,6 +3,7 @@ import { go } from "../router";
 import { createWheelPicker } from "../components/wheel-picker";
 import { TimerEngine, formatRemaining } from "../timer/engine";
 import { acquireWakeLock, releaseWakeLock, reacquireOnVisible } from "../timer/wake-lock";
+import { createHeartbeat } from "../timer/heartbeat";
 import { playSound, stopSound } from "../audio/library";
 import { getState, setState } from "../state";
 import { setTimerProgress } from "../webgl/renderer";
@@ -56,6 +57,7 @@ async function fireNotification(title: string, body: string) {
 
 export function renderTimer(root: HTMLElement): () => void {
   const engine = new TimerEngine();
+  const heartbeat = createHeartbeat();
   const state = getState();
 
   let selectedSeconds = state.defaultPresetSeconds || 60;
@@ -280,6 +282,13 @@ export function renderTimer(root: HTMLElement): () => void {
     rafId = requestAnimationFrame(tick);
   }
 
+  function pulseRing() {
+    countdownInner.classList.remove("is-beating");
+    // Force reflow so the animation restarts on each beat
+    void countdownInner.offsetWidth;
+    countdownInner.classList.add("is-beating");
+  }
+
   async function startCountdown(durationSec: number) {
     if (durationSec <= 0) return;
     engine.start(durationSec * 1000);
@@ -288,11 +297,15 @@ export function renderTimer(root: HTMLElement): () => void {
     vibrate(15);
     await acquireWakeLock();
     if (!releaseVis) releaseVis = reacquireOnVisible();
+    heartbeat.setVisualHandler(pulseRing);
+    heartbeat.start();
     rafId = requestAnimationFrame(tick);
   }
 
   async function onDone() {
     countdownView.classList.add("is-done");
+    countdownInner.classList.remove("is-beating");
+    heartbeat.stop();
     timeText.textContent = "00:00";
     setTimerProgress(1);
     vibrate([200, 80, 200, 80, 400]);
@@ -307,6 +320,8 @@ export function renderTimer(root: HTMLElement): () => void {
     rafId = 0;
     stopSound();
     engine.stop();
+    heartbeat.stop();
+    countdownInner.classList.remove("is-beating");
     void releaseWakeLock();
     if (releaseVis) {
       releaseVis();
@@ -329,12 +344,15 @@ export function renderTimer(root: HTMLElement): () => void {
       engine.pause();
       pauseBtn.textContent = "Resume";
       countdownView.classList.add("is-paused");
+      countdownInner.classList.remove("is-beating");
+      heartbeat.stop();
       cancelAnimationFrame(rafId);
       void releaseWakeLock();
     } else if (status === "paused") {
       engine.resume();
       pauseBtn.textContent = "Pause";
       countdownView.classList.remove("is-paused");
+      heartbeat.start();
       void acquireWakeLock();
       rafId = requestAnimationFrame(tick);
     } else if (status === "done") {
@@ -383,6 +401,7 @@ export function renderTimer(root: HTMLElement): () => void {
   return () => {
     cancelAnimationFrame(rafId);
     clearTimeout(pendingTapTimer);
+    heartbeat.dispose();
     stopSound();
     void releaseWakeLock();
     if (releaseVis) releaseVis();

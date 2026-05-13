@@ -1,0 +1,15 @@
+[data-theme="light"] {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --fg: #1a1a1f;
+  --fg-dim: #6b6f7a;
+  --accent: #4c5bff;
+  --accent-strong: #2533e0;
+  --danger: #d6364c;
+  --surface: rgba(0, 0, 0, 0.04);
+  --surface-strong: rgba(0, 0, 0, 0.08);
+  --border: rgba(0, 0, 0, 0.08);
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --digit-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+  --button-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}

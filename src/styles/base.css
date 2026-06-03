@@ -166,6 +166,68 @@ body {
   -webkit-text-fill-color: var(--fg-dim);
 }
 
+/* ---------- Almanac (weather / sun / moon / holiday) ---------- */
+.almanac {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.alm-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.alm-icon {
+  flex: none;
+  width: 1.5em;
+  text-align: center;
+  font-size: 18px;
+}
+
+.alm-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.alm-sub {
+  flex: none;
+  color: var(--fg-dim);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+.alm-dim {
+  color: var(--fg-dim);
+}
+
+.alm-sun {
+  color: var(--fg-dim);
+}
+
+.alm-sun .alm-text {
+  flex: none;
+}
+
+/* Push the sunset pair to the right edge, keeping sunrise on the left. */
+.alm-sun .alm-icon:nth-of-type(2) {
+  margin-left: auto;
+}
+
+.alm-holiday .alm-text {
+  font-weight: 500;
+}
+
 /* ---------- Buttons ---------- */
 .btn-row {
   display: grid;

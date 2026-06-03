@@ -34,7 +34,7 @@ on any type error. Run it before pushing.
   listeners, RAF loops, etc. (see the `dispose` patterns in components/screens).
 
 ### Screens (`src/screens/`)
-- `home.ts` — clock + Timer/Settings buttons + network badge.
+- `home.ts` — clock + almanac panel + Timer/Settings buttons + network badge.
 - `timer.ts` — the most complex screen. Two views (setup with presets/wheel
   picker, and countdown with SVG progress ring). Owns a `TimerEngine`, a
   `requestAnimationFrame` tick loop, wake lock, sound playback, vibration, and
@@ -57,6 +57,22 @@ on any type error. Run it before pushing.
 - `wake-lock.ts` wraps the Screen Wake Lock API defensively (feature-detected,
   all calls no-op if unsupported); `reacquireOnVisible()` re-grabs the lock when
   the tab becomes visible again.
+
+### Almanac (`src/components/almanac.ts` + `src/util/{moon,orthodox,weather}.ts`)
+The home-screen panel below the clock. All labels are in **Greek**, temps in °C.
+- `moon.ts` — moon phase from date (pure astronomical approximation, no network).
+- `orthodox.ts` — Greek Orthodox holidays. `orthodoxPascha(year)` uses the Meeus
+  Julian algorithm + 13-day offset (valid 1900–2099); movable feasts are offsets
+  from Pascha, fixed feasts are calendar dates. `holidayOn` / `nextHoliday` drive
+  the UI (shows today's feast, else the next upcoming).
+- `weather.ts` — current weather + today's high/low + sunrise/sunset from the
+  **keyless Open-Meteo API** (`api.open-meteo.com`, CORS-friendly). Location comes
+  from `navigator.geolocation` with an **Athens fallback** if denied/unavailable;
+  coords and the last result are cached in localStorage (`homescreen.coords.v1`,
+  `homescreen.weather.v1`, 15-min TTL). WMO codes map to Greek descriptions+emoji.
+- The component renders moon/holiday synchronously and paints weather/sun async
+  (cached value first, then live fetch); failures degrade silently. Network +
+  geolocation are runtime/browser concerns — they don't affect the build.
 
 ### Theming (`src/theme.ts`, `src/styles/`)
 - Themes: `dark` (default), `light`, `marble`, `sandstone`, `cyberpunk`, `dos`.

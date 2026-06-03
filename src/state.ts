@@ -19,7 +19,7 @@ const KEY = "homescreen.state.v1";
 const defaults: AppState = {
   theme: "dark",
   selectedSoundId: "d1",
-  defaultPresetSeconds: 60,
+  defaultPresetSeconds: 300,
   vibrate: true,
   notifications: true,
 };

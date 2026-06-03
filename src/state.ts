@@ -6,12 +6,30 @@ export type ThemeId =
   | "cyberpunk"
   | "dos";
 
+export type Lang = "el" | "en";
+export type TempUnit = "c" | "f";
+export type HourPref = "auto" | "12" | "24";
+
 export interface AppState {
   theme: ThemeId;
   selectedSoundId: string;
   defaultPresetSeconds: number;
   vibrate: boolean;
   notifications: boolean;
+  // Almanac / localization
+  lang: Lang;
+  tempUnit: TempUnit;
+  hour12: HourPref;
+  almWeather: boolean;
+  almSun: boolean;
+  almMoon: boolean;
+  almHoliday: boolean;
+  almNameday: boolean;
+  almFasting: boolean;
+  // Manual location override (null = use geolocation)
+  locLat: number | null;
+  locLon: number | null;
+  locLabel: string;
 }
 
 const KEY = "homescreen.state.v1";
@@ -22,6 +40,18 @@ const defaults: AppState = {
   defaultPresetSeconds: 300,
   vibrate: true,
   notifications: true,
+  lang: "el",
+  tempUnit: "c",
+  hour12: "auto",
+  almWeather: true,
+  almSun: true,
+  almMoon: true,
+  almHoliday: true,
+  almNameday: true,
+  almFasting: true,
+  locLat: null,
+  locLon: null,
+  locLabel: "",
 };
 
 function read(): AppState {

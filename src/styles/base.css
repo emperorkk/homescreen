@@ -228,6 +228,116 @@ body {
   font-weight: 500;
 }
 
+.alm-tappable {
+  cursor: pointer;
+}
+
+.alm-forecast {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.alm-fc-day {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 50px;
+  padding: 8px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-size: 12px;
+}
+
+.alm-fc-dow {
+  color: var(--fg-dim);
+  text-transform: capitalize;
+}
+
+.alm-fc-emoji {
+  font-size: 17px;
+}
+
+.alm-fc-temp {
+  font-weight: 600;
+}
+
+.alm-fc-low {
+  color: var(--fg-dim);
+}
+
+/* ---------- Segmented control ---------- */
+.segmented {
+  display: inline-flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+  gap: 2px;
+}
+
+.seg {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--fg-dim);
+  font: inherit;
+  font-size: 14px;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+
+.seg[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+}
+
+/* ---------- Location search ---------- */
+.loc-search {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.loc-input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+}
+
+.loc-results {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.loc-result {
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  cursor: pointer;
+}
+
+.loc-reset {
+  margin-top: 10px;
+}
+
 /* ---------- Buttons ---------- */
 .btn-row {
   display: grid;

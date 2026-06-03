@@ -10,6 +10,7 @@ import {
   type SoundEntry,
 } from "../audio/library";
 import { addSound, deleteSound } from "../audio/idb";
+import { searchPlaces, clearAlmanacCache } from "../util/weather";
 
 const THEME_PREVIEWS: Record<ThemeId, string> = {
   dark: "linear-gradient(135deg,#0b0c10,#1c1f2a 60%,#58c2ff)",
@@ -227,7 +228,207 @@ export function renderSettings(root: HTMLElement): () => void {
     ),
   ]);
 
-  root.append(topbar, themeSection, soundSection, togglesSection);
+  // ---------- segmented control + control row helpers ----------
+  function segmented<T extends string>(
+    read: () => T,
+    options: { value: T; label: string }[],
+    onChange: (v: T) => void,
+  ): HTMLElement {
+    const wrap = el("div", { class: "segmented", role: "group" });
+    function paint() {
+      wrap.innerHTML = "";
+      const cur = read();
+      for (const o of options) {
+        wrap.append(
+          el(
+            "button",
+            {
+              class: "seg",
+              type: "button",
+              "aria-pressed": String(o.value === cur),
+              onclick: () => {
+                vibrate(8);
+                onChange(o.value);
+                paint();
+              },
+            },
+            [o.label],
+          ),
+        );
+      }
+    }
+    paint();
+    return wrap;
+  }
+
+  function controlRow(label: string, control: HTMLElement): HTMLElement {
+    return el("div", { class: "toggle-row" }, [
+      el("div", {}, [el("div", { class: "label" }, [label])]),
+      control,
+    ]);
+  }
+
+  // ---------- language ----------
+  const languageSection = el("section", { class: "section" }, [
+    el("h2", {}, ["Γλώσσα / Language"]),
+    segmented(
+      () => getState().lang,
+      [
+        { value: "el", label: "Ελληνικά" },
+        { value: "en", label: "English" },
+      ],
+      (v) => setState({ lang: v }),
+    ),
+  ]);
+
+  // ---------- units & clock ----------
+  const formatSection = el("section", { class: "section" }, [
+    el("h2", {}, ["Units & clock"]),
+    controlRow(
+      "Temperature",
+      segmented(
+        () => getState().tempUnit,
+        [
+          { value: "c", label: "°C" },
+          { value: "f", label: "°F" },
+        ],
+        (v) => setState({ tempUnit: v }),
+      ),
+    ),
+    controlRow(
+      "Clock format",
+      segmented(
+        () => getState().hour12,
+        [
+          { value: "auto", label: "Auto" },
+          { value: "24", label: "24h" },
+          { value: "12", label: "12h" },
+        ],
+        (v) => setState({ hour12: v }),
+      ),
+    ),
+  ]);
+
+  // ---------- almanac sections ----------
+  const almanacSection = el("section", { class: "section" }, [
+    el("h2", {}, ["Almanac"]),
+    toggleRow("Weather", "Current conditions + forecast", state.almWeather, (v) =>
+      setState({ almWeather: v }),
+    ),
+    toggleRow("Sunrise / sunset", "Daily sun times", state.almSun, (v) =>
+      setState({ almSun: v }),
+    ),
+    toggleRow("Moon phase", "Lunar phase + illumination", state.almMoon, (v) =>
+      setState({ almMoon: v }),
+    ),
+    toggleRow("Fasting", "Orthodox fasting status", state.almFasting, (v) =>
+      setState({ almFasting: v }),
+    ),
+    toggleRow("Name days", "Greek name days (γιορτές)", state.almNameday, (v) =>
+      setState({ almNameday: v }),
+    ),
+    toggleRow("Orthodox holidays", "Today's or next feast", state.almHoliday, (v) =>
+      setState({ almHoliday: v }),
+    ),
+  ]);
+
+  // ---------- location ----------
+  function currentLocLabel(): string {
+    const st = getState();
+    if (st.locLat != null && st.locLon != null) {
+      return `📍 ${st.locLabel || `${st.locLat.toFixed(2)}, ${st.locLon.toFixed(2)}`}`;
+    }
+    return "📍 Using device location";
+  }
+  const locCurrent = el("div", { class: "desc" }, [currentLocLabel()]);
+  const locInput = el("input", {
+    type: "search",
+    class: "loc-input",
+    placeholder: "Search city…",
+    enterkeyhint: "search",
+  }) as HTMLInputElement;
+  const locResults = el("div", { class: "loc-results" });
+
+  async function doSearch() {
+    const q = locInput.value.trim();
+    if (!q) return;
+    locResults.textContent = "…";
+    try {
+      const results = await searchPlaces(q);
+      locResults.innerHTML = "";
+      if (!results.length) {
+        locResults.textContent = "No matches";
+        return;
+      }
+      for (const r of results) {
+        locResults.append(
+          el(
+            "button",
+            {
+              class: "loc-result",
+              type: "button",
+              onclick: () => {
+                vibrate(8);
+                setState({ locLat: r.lat, locLon: r.lon, locLabel: r.label });
+                clearAlmanacCache();
+                locResults.innerHTML = "";
+                locInput.value = "";
+                locCurrent.textContent = currentLocLabel();
+              },
+            },
+            [r.label],
+          ),
+        );
+      }
+    } catch {
+      locResults.textContent = "Search failed";
+    }
+  }
+  locInput.addEventListener("keydown", (e) => {
+    if ((e as KeyboardEvent).key === "Enter") {
+      e.preventDefault();
+      void doSearch();
+    }
+  });
+
+  const locationSection = el("section", { class: "section" }, [
+    el("h2", {}, ["Location"]),
+    locCurrent,
+    el("div", { class: "loc-search" }, [
+      locInput,
+      el(
+        "button",
+        { class: "btn ghost", type: "button", onclick: () => void doSearch() },
+        ["Search"],
+      ),
+    ]),
+    locResults,
+    el(
+      "button",
+      {
+        class: "btn ghost loc-reset",
+        type: "button",
+        onclick: () => {
+          vibrate(8);
+          setState({ locLat: null, locLon: null, locLabel: "" });
+          clearAlmanacCache();
+          locCurrent.textContent = currentLocLabel();
+        },
+      },
+      ["Use my location"],
+    ),
+  ]);
+
+  root.append(
+    topbar,
+    themeSection,
+    languageSection,
+    formatSection,
+    almanacSection,
+    locationSection,
+    soundSection,
+    togglesSection,
+  );
 
   void refreshSounds().then(paintSounds);
 

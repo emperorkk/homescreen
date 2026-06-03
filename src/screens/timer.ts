@@ -7,12 +7,13 @@ import { playSound, stopSound } from "../audio/library";
 import { getState, setState } from "../state";
 import { setTimerProgress } from "../webgl/renderer";
 
-const PRESETS_SEC = [5, 15, 20, 30, 60, 90, 120];
+// Preset durations expressed in minutes; chips display as HH:MM.
+const PRESET_MINUTES = [5, 15, 20, 30, 60, 90, 120];
 
-function fmtPreset(s: number): string {
-  const m = Math.floor(s / 60);
-  const sec = s % 60;
-  return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+function fmtPreset(totalSec: number): string {
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
 interface NotifLike {
@@ -51,7 +52,8 @@ export function renderTimer(root: HTMLElement): () => void {
 
   const presetEls: HTMLButtonElement[] = [];
   const presets = el("div", { class: "presets", role: "group" }, []);
-  for (const s of PRESETS_SEC) {
+  for (const min of PRESET_MINUTES) {
+    const s = min * 60;
     const btn = el(
       "button",
       {

@@ -10,7 +10,7 @@ export function renderClock(): { node: HTMLElement; dispose: () => void } {
   const sep = el("span", { class: "sep" }, [":"]);
   const ampm = el("span", { class: "clock-ampm" });
   const date = el("div", { class: "clock-date" });
-  const clock = el("div", { class: "clock", "data-gradient": "on" }, [
+  const clock = el("div", { class: "clock" }, [
     hh,
     sep,
     mm,

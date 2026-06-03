@@ -11,6 +11,7 @@ import {
 } from "../audio/library";
 import { addSound, deleteSound } from "../audio/idb";
 import { searchPlaces, clearAlmanacCache } from "../util/weather";
+import { canInstall, onInstallChange, promptInstall } from "../pwa/install";
 
 const THEME_PREVIEWS: Record<ThemeId, string> = {
   dark: "linear-gradient(135deg,#0b0c10,#1c1f2a 60%,#58c2ff)",
@@ -419,8 +420,33 @@ export function renderSettings(root: HTMLElement): () => void {
     ),
   ]);
 
+  // ---------- install (PWA) ----------
+  const installBtn = el(
+    "button",
+    {
+      class: "btn primary btn-wide",
+      type: "button",
+      onclick: () => {
+        vibrate(8);
+        void promptInstall();
+      },
+    },
+    ["Install app"],
+  );
+  const installSection = el("section", { class: "section", hidden: !canInstall() }, [
+    el("h2", {}, ["Install"]),
+    el("div", { class: "desc" }, [
+      "Add Homescreen to your device for full-screen, offline use.",
+    ]),
+    installBtn,
+  ]);
+  const offInstall = onInstallChange(() => {
+    installSection.hidden = !canInstall();
+  });
+
   root.append(
     topbar,
+    installSection,
     themeSection,
     languageSection,
     formatSection,
@@ -434,5 +460,6 @@ export function renderSettings(root: HTMLElement): () => void {
 
   return () => {
     stopSound();
+    offInstall();
   };
 }

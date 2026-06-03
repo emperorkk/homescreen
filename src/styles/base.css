@@ -107,6 +107,63 @@ body {
   box-shadow: 0 0 8px var(--danger);
 }
 
+.topbar-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.battery-badge {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--fg-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.battery-badge[data-low="true"] {
+  color: var(--danger);
+}
+
+.clock-tappable {
+  cursor: pointer;
+}
+
+/* Nightstand dim mode */
+.dim-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dim-inner {
+  animation: dim-drift 90s ease-in-out infinite alternate;
+}
+
+.dim-screen .clock {
+  opacity: 0.32;
+  filter: saturate(0.6);
+}
+
+.dim-screen .clock-date {
+  opacity: 0.5;
+}
+
+@keyframes dim-drift {
+  0% {
+    transform: translate(-3vw, -4vh);
+  }
+  50% {
+    transform: translate(3vw, 2vh);
+  }
+  100% {
+    transform: translate(-2vw, 4vh);
+  }
+}
+
 /* ---------- Clock ---------- */
 .clock-wrap {
   flex: 1;

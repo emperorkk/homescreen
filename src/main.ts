@@ -15,6 +15,7 @@ import { renderTimer } from "./screens/timer";
 import { renderAlarm } from "./screens/alarm";
 import { renderSettings } from "./screens/settings";
 import { startAlarmScheduler } from "./alarm/scheduler";
+import "./pwa/install";
 import { startRenderer, stopRenderer, setRendererTheme } from "./webgl/renderer";
 
 const app = document.getElementById("app") as HTMLElement;

@@ -1,7 +1,7 @@
 import { el, svg, vibrate } from "../util/dom";
 import { go } from "../router";
 import { createWheelPicker } from "../components/wheel-picker";
-import { TimerEngine, formatRemaining } from "../timer/engine";
+import { TimerEngine, formatRemaining, type TimerPersist } from "../timer/engine";
 import { acquireWakeLock, releaseWakeLock, reacquireOnVisible } from "../timer/wake-lock";
 import { playSound, stopSound } from "../audio/library";
 import { getState, setState } from "../state";
@@ -9,6 +9,33 @@ import { setTimerProgress } from "../webgl/renderer";
 
 // Preset durations expressed in minutes; chips display as HH:MM.
 const PRESET_MINUTES = [5, 15, 20, 30, 60, 90, 120];
+
+const TIMER_KEY = "homescreen.timer.v1";
+
+function saveTimer(engine: TimerEngine): void {
+  try {
+    localStorage.setItem(TIMER_KEY, JSON.stringify(engine.serialize()));
+  } catch {
+    /* ignore */
+  }
+}
+
+function clearTimer(): void {
+  try {
+    localStorage.removeItem(TIMER_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
+function loadTimer(): TimerPersist | null {
+  try {
+    const raw = localStorage.getItem(TIMER_KEY);
+    return raw ? (JSON.parse(raw) as TimerPersist) : null;
+  } catch {
+    return null;
+  }
+}
 
 function fmtPreset(totalSec: number): string {
   const h = Math.floor(totalSec / 3600);
@@ -177,6 +204,7 @@ export function renderTimer(root: HTMLElement): () => void {
   async function startCountdown(durationSec: number) {
     if (durationSec <= 0) return;
     engine.start(durationSec * 1000);
+    saveTimer(engine);
     showCountdown();
     pauseBtn.textContent = "Pause";
     vibrate(15);
@@ -201,6 +229,7 @@ export function renderTimer(root: HTMLElement): () => void {
     rafId = 0;
     stopSound();
     engine.stop();
+    clearTimer();
     void releaseWakeLock();
     if (releaseVis) {
       releaseVis();
@@ -223,11 +252,13 @@ export function renderTimer(root: HTMLElement): () => void {
     const status = engine.getStatus();
     if (status === "running") {
       engine.pause();
+      saveTimer(engine);
       pauseBtn.textContent = "Resume";
       cancelAnimationFrame(rafId);
       void releaseWakeLock();
     } else if (status === "paused") {
       engine.resume();
+      saveTimer(engine);
       pauseBtn.textContent = "Pause";
       void acquireWakeLock();
       rafId = requestAnimationFrame(tick);
@@ -241,7 +272,37 @@ export function renderTimer(root: HTMLElement): () => void {
     stopAll();
   });
 
-  showSetup();
+  // Resume a timer that was running/paused before a reload or navigation away.
+  function restoreOrSetup() {
+    const persisted = loadTimer();
+    if (!persisted || persisted.status === "idle") {
+      clearTimer();
+      showSetup();
+      return;
+    }
+    engine.restore(persisted);
+    const snap = engine.snapshot();
+    if (snap.remainingMs <= 0) {
+      // Finished while away — don't blare the alarm retroactively.
+      engine.stop();
+      clearTimer();
+      showSetup();
+      return;
+    }
+    showCountdown();
+    timeText.textContent = formatRemaining(snap.remainingMs);
+    ringProgress.setAttribute("stroke-dashoffset", String(C * snap.progress));
+    setTimerProgress(snap.progress);
+    if (snap.status === "paused") {
+      pauseBtn.textContent = "Resume";
+    } else {
+      pauseBtn.textContent = "Pause";
+      void acquireWakeLock();
+      if (!releaseVis) releaseVis = reacquireOnVisible();
+      rafId = requestAnimationFrame(tick);
+    }
+  }
+  restoreOrSetup();
 
   return () => {
     cancelAnimationFrame(rafId);

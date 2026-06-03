@@ -1,4 +1,4 @@
-export type Route = "home" | "timer" | "settings";
+export type Route = "home" | "timer" | "alarm" | "settings";
 
 export type RouteHandler = (route: Route) => void;
 
@@ -6,6 +6,7 @@ const ROUTES: Record<string, Route> = {
   "": "home",
   "/": "home",
   "/timer": "timer",
+  "/alarm": "alarm",
   "/settings": "settings",
 };
 

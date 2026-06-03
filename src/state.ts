@@ -10,6 +10,18 @@ export type Lang = "el" | "en";
 export type TempUnit = "c" | "f";
 export type HourPref = "auto" | "12" | "24";
 
+export interface Alarm {
+  id: string;
+  /** "HH:MM" in 24-hour form. */
+  time: string;
+  label: string;
+  enabled: boolean;
+  /** Weekdays it repeats on (0 = Sun … 6 = Sat); empty = every day. */
+  days: number[];
+  /** Optional sound override; falls back to selectedSoundId. */
+  soundId?: string;
+}
+
 export interface AppState {
   theme: ThemeId;
   selectedSoundId: string;
@@ -30,6 +42,8 @@ export interface AppState {
   locLat: number | null;
   locLon: number | null;
   locLabel: string;
+  // Scheduled alarms
+  alarms: Alarm[];
 }
 
 const KEY = "homescreen.state.v1";
@@ -52,6 +66,7 @@ const defaults: AppState = {
   locLat: null,
   locLon: null,
   locLabel: "",
+  alarms: [],
 };
 
 function read(): AppState {

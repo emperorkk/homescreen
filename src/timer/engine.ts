@@ -7,6 +7,14 @@ export interface TimerSnapshot {
   progress: number; // 0..1, 0 = just started, 1 = finished
 }
 
+export interface TimerPersist {
+  status: TimerStatus;
+  durationMs: number;
+  startEpoch: number;
+  pausedAt: number;
+  accumulatedPause: number;
+}
+
 export class TimerEngine {
   private status: TimerStatus = "idle";
   private durationMs = 0;
@@ -74,6 +82,27 @@ export class TimerEngine {
 
   getDoneEpoch() {
     return this.doneEpoch;
+  }
+
+  /** Serialize the running/paused state so it survives a reload. */
+  serialize(): TimerPersist {
+    return {
+      status: this.status,
+      durationMs: this.durationMs,
+      startEpoch: this.startEpoch,
+      pausedAt: this.pausedAt,
+      accumulatedPause: this.accumulatedPause,
+    };
+  }
+
+  /** Restore from a previously serialized state. */
+  restore(s: TimerPersist): void {
+    this.status = s.status;
+    this.durationMs = s.durationMs;
+    this.startEpoch = s.startEpoch;
+    this.pausedAt = s.pausedAt;
+    this.accumulatedPause = s.accumulatedPause;
+    this.doneEpoch = 0;
   }
 }
 

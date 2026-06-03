@@ -27,10 +27,22 @@ export function renderHome(root: HTMLElement): () => void {
     },
     ["Timer"],
   );
+  const alarmBtn = el(
+    "button",
+    {
+      class: "btn",
+      type: "button",
+      onclick: () => {
+        vibrate(8);
+        go("alarm");
+      },
+    },
+    ["Alarm"],
+  );
   const settingsBtn = el(
     "button",
     {
-      class: "btn ghost",
+      class: "btn ghost btn-wide",
       type: "button",
       onclick: () => {
         vibrate(8);
@@ -39,7 +51,10 @@ export function renderHome(root: HTMLElement): () => void {
     },
     ["Settings"],
   );
-  const buttons = el("div", { class: "btn-row" }, [timerBtn, settingsBtn]);
+  const buttons = el("div", { class: "btn-stack" }, [
+    el("div", { class: "btn-row" }, [timerBtn, alarmBtn]),
+    settingsBtn,
+  ]);
 
   root.append(topbar, clock.node, almanac.node, buttons);
 

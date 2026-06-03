@@ -12,7 +12,9 @@ import { getState, onState } from "./state";
 import { applyTheme, THEMES } from "./theme";
 import { renderHome } from "./screens/home";
 import { renderTimer } from "./screens/timer";
+import { renderAlarm } from "./screens/alarm";
 import { renderSettings } from "./screens/settings";
+import { startAlarmScheduler } from "./alarm/scheduler";
 import { startRenderer, stopRenderer, setRendererTheme } from "./webgl/renderer";
 
 const app = document.getElementById("app") as HTMLElement;
@@ -39,10 +41,12 @@ function mount(route: Route) {
   app.dataset.route = route;
   if (route === "home") cleanup = renderHome(app);
   else if (route === "timer") cleanup = renderTimer(app);
+  else if (route === "alarm") cleanup = renderAlarm(app);
   else cleanup = renderSettings(app);
 }
 
 startRouter(mount);
+startAlarmScheduler();
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

@@ -1,7 +1,16 @@
 import { el } from "../util/dom";
+import { getState } from "../state";
 
 function pad(n: number): string {
   return n < 10 ? `0${n}` : String(n);
+}
+
+function uses24Hour(): boolean {
+  const pref = getState().hour12;
+  if (pref === "24") return true;
+  if (pref === "12") return false;
+  // "auto" — follow the device locale.
+  return !new Intl.DateTimeFormat(undefined, { hour: "numeric" }).resolvedOptions().hour12;
 }
 
 export function renderClock(): { node: HTMLElement; dispose: () => void } {
@@ -26,9 +35,7 @@ export function renderClock(): { node: HTMLElement; dispose: () => void } {
 
   function update() {
     const now = new Date();
-    const use24 = !new Intl.DateTimeFormat(undefined, { hour: "numeric" })
-      .resolvedOptions()
-      .hour12;
+    const use24 = uses24Hour();
     let h = now.getHours();
     let suffix = "";
     if (!use24) {

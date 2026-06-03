@@ -119,7 +119,7 @@ body {
 
 .clock {
   font-family: var(--font-display);
-  font-weight: 200;
+  font-weight: 300;
   font-size: clamp(72px, 22vw, 168px);
   line-height: 1;
   letter-spacing: -0.04em;
@@ -127,16 +127,16 @@ body {
   display: flex;
   align-items: baseline;
   gap: 0;
+  color: var(--fg);
   text-shadow: var(--digit-shadow);
   background: var(--digit-gradient);
   background-clip: text;
   -webkit-background-clip: text;
 }
 
-.clock[data-gradient="on"] {
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-}
+/* Themes that define a digit gradient (e.g. marble) override .clock to use a
+   transparent fill so the gradient shows through. By default the clock keeps
+   the solid, high-contrast --fg color so the time stays readable. */
 
 .clock .sep {
   opacity: 0.5;
